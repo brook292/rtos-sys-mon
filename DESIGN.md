@@ -41,7 +41,7 @@ This firmware is designed for the STM32 Nucleo-F401RE board to monitor internal 
 
 ---
 
- ## 4.RTOS Task Design
+## 4.RTOS Task Design
 
 | Task Name | Stack Size | Priority | Purpose                                |
 | --------- | ---------- | -------- | -------------------------------------- |
