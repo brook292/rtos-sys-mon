@@ -39,6 +39,7 @@ This firmware is designed for the STM32 Nucleo-F401RE board to monitor internal 
 |   Heartbeat Task    |
 +---------------------+
 
+---
 
  ## 4.RTOS Task Design
 
@@ -48,6 +49,8 @@ This firmware is designed for the STM32 Nucleo-F401RE board to monitor internal 
 | Heartbeat | 128        | Low      | Blinks LED at 1Hz                      |
 | SelfCheck | 512        | Medium   | Performs diagnostics, stack checks     |
 | PowerMgr  | 256        | High     | Detects inactivity, enters STOP mode   |
+
+---
 
 
  ## 5.CLI Specification
@@ -59,6 +62,8 @@ This firmware is designed for the STM32 Nucleo-F401RE board to monitor internal 
 | `sleep`  | Enter STOP mode             | `[SYS] Sleeping now...`           |
 | `reset`  | Software reset              | `[SYS] Resetting system...`       |
 | `help`   | List available commands     | `[CLI] Commands: status, diag...` |
+
+---
 
 
  ## 6.Peripheral Usage
@@ -72,6 +77,8 @@ This firmware is designed for the STM32 Nucleo-F401RE board to monitor internal 
 
 Peripherals are initialized via STM32CubeMX and main.c startup code.
 
+---
+
 
  ## 7.Power Management
 
@@ -82,6 +89,8 @@ Peripherals are initialized via STM32CubeMX and main.c startup code.
 -The MCU wakes up via UART RX interrupt or EXTI13 (user button).
 
 -System resumes to normal operation after wakeup, preserving all task states.
+
+---
 
 
  ## 8.Future Improvements
@@ -95,6 +104,9 @@ Add software watchdog + fault recovery system
 Implement OTA update mechanism via UART bootloader
 
 Add unit testing hooks (if using host simulation)
+
+---
+
 
  ## 9.Notes
 
