@@ -18,7 +18,7 @@ This firmware is designed for the STM32 Nucleo-F401RE board to monitor internal 
 
 ## 3. System Architecture
 
-```text
+
 +---------------------+
 |     UART CLI        |
 +----------+----------+
