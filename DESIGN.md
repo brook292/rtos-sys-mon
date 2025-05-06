@@ -17,25 +17,28 @@ This firmware is designed for the STM32 Nucleo-F401RE board to monitor internal 
 ---
 
 ## 3. System Architecture
+
+```
 +---------------------+
-| UART CLI |
+|     UART CLI        |
 +----------+----------+
-|
-v
+           |
+           v
 +---------------------+
-| Command Processor |
+|  Command Processor  |
 +----------+----------+
-|
-+-----+-----+
-| |
-+----v----+ +---v----+
-| SelfChk | | Power |
-| Task | | Task |
-+---------+ +--------+
+           |
+     +-----+-----+
+     |           |
++----v----+  +---v----+
+| SelfChk |  | Power  |
+| Task    |  | Task   |
++---------+  +--------+
 
 +---------------------+
-| Heartbeat Task |
+|   Heartbeat Task    |
 +---------------------+
+```
 
 
 ## 4. RTOS Task Design
