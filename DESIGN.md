@@ -41,7 +41,7 @@ This firmware is designed for the STM32 Nucleo-F401RE board to monitor internal 
 
 ---
 
-## 4.RTOS Task Design
+## 4. RTOS Task Design
 
 | Task Name | Stack Size | Priority | Purpose                                |
 | --------- | ---------- | -------- | -------------------------------------- |
@@ -53,7 +53,7 @@ This firmware is designed for the STM32 Nucleo-F401RE board to monitor internal 
 ---
 
 
- ## 5.CLI Specification
+ ## 5. CLI Specification
 
 | Command  | Description                 | Example Output                    |
 | -------- | --------------------------- | --------------------------------- |
@@ -66,7 +66,7 @@ This firmware is designed for the STM32 Nucleo-F401RE board to monitor internal 
 ---
 
 
- ## 6.Peripheral Usage
+ ## 6. Peripheral Usage
 
 | Peripheral  | Use                            | Notes                              |
 | ----------- | ------------------------------ | ---------------------------------- |
@@ -80,7 +80,7 @@ Peripherals are initialized via STM32CubeMX and main.c startup code.
 ---
 
 
- ## 7.Power Management
+ ## 7. Power Management
 
 -If no UART input is detected for 30 seconds, the system enters STOP mode.
 
@@ -93,7 +93,7 @@ Peripherals are initialized via STM32CubeMX and main.c startup code.
 ---
 
 
- ## 8.Future Improvements
+ ## 8. Future Improvements
 
 Add logging over UART to SD card or QSPI (if hardware permits)
 
@@ -108,7 +108,7 @@ Add unit testing hooks (if using host simulation)
 ---
 
 
- ## 9.Notes
+ ## 9. Notes
 
 Project generated using STM32CubeMX with FreeRTOS enabled.
 
