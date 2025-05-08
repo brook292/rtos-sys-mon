@@ -25,7 +25,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "task_utils.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -91,8 +91,7 @@ void MX_FREERTOS_Init(void) {
 
   /* Create the thread(s) */
   /* creation of defaultTask */
-	TaskCreateSafe(HeartBeatTask, NULL, &HeartBeatTask_attributes, &HeartBeatTaskHandle);
-
+	HeartBeatTaskHandle = osThreadNew(HeartBeatTask, NULL, &HeartBeatTask_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
