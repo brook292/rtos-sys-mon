@@ -26,6 +26,8 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "task_utils.h"
+#include "ring_buffer.h"
+#include "usart.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -36,6 +38,7 @@
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 
+#define CLI_FLAG_LINE_READY (1U << 0)
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -45,6 +48,9 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN Variables */
+volatile uint8_t rx_data;
+RingBuffer cli_buffer;
+osEventFlagsId_t cliFlags;
 /* USER CODE END Variables */
 /* Definitions for defaultTask */
 osThreadId_t HeartBeatTaskHandle;
@@ -70,7 +76,8 @@ void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
   */
 void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN Init */
-
+  RingBuffer_Init(&cli_buffer);
+  HAL_UART_Receive_IT(&huart2, (uint8_t *)&rx_data, sizeof(rx_data));
   /* USER CODE END Init */
 
   /* USER CODE BEGIN RTOS_MUTEX */
@@ -99,7 +106,7 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE END RTOS_THREADS */
 
   /* USER CODE BEGIN RTOS_EVENTS */
-  /* add events, ... */
+   cliFlags = osEventFlagsNew(NULL);
   /* USER CODE END RTOS_EVENTS */
 
 }
@@ -125,6 +132,18 @@ void HeartBeatTask(void *argument)
 
 /* Private application code --------------------------------------------------*/
 /* USER CODE BEGIN Application */
-
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+	if(huart->Instance == USART2)
+	{
+	  RingBuffer_Put(&cli_buffer,rx_data);
+	  if(rx_data == '\n' || rx_data == '\r' )
+	  {
+       //set event flag
+		osEventFlagsSet(cliFlags, CLI_FLAG_LINE_READY);
+	  }
+	  HAL_UART_Receive_IT(&huart2, (uint8_t *)&rx_data, sizeof(rx_data));
+	}
+}
 /* USER CODE END Application */
 
