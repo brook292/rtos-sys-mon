@@ -26,8 +26,9 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "task_utils.h"
-#include "ring_buffer.h"
+#include "cli.h"
 #include "usart.h"
+#include <string.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -49,23 +50,29 @@
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN Variables */
 volatile uint8_t rx_data;
-RingBuffer cli_buffer;
 osEventFlagsId_t cliFlags;
 /* USER CODE END Variables */
 /* Definitions for defaultTask */
 osThreadId_t HeartBeatTaskHandle;
+osThreadId_t CliTaskHandle;
 const osThreadAttr_t HeartBeatTask_attributes = {
   .name = "HeartBeatTask",
   .stack_size = 128 * 4,
   .priority = (osPriority_t) osPriorityLow,
 };
 
+const osThreadAttr_t CliTask_attributes = {
+  .name = "CliTask",
+  .stack_size = 512 * 4,
+  .priority = (osPriority_t) osPriorityAboveNormal,
+};
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
-
+void HeartBeatTask(void *argument);
+void CliTask(void *argument);
 /* USER CODE END FunctionPrototypes */
 
-void HeartBeatTask(void *argument);
+
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -76,7 +83,7 @@ void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
   */
 void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN Init */
-  RingBuffer_Init(&cli_buffer);
+  CLI_Init();
   HAL_UART_Receive_IT(&huart2, (uint8_t *)&rx_data, sizeof(rx_data));
   /* USER CODE END Init */
 
@@ -99,7 +106,7 @@ void MX_FREERTOS_Init(void) {
   /* Create the thread(s) */
   /* creation of defaultTask */
 	TaskCreateSafe(HeartBeatTask, NULL, &HeartBeatTask_attributes, &HeartBeatTaskHandle);
-
+	TaskCreateSafe(CliTask, NULL, &CliTask_attributes, &CliTaskHandle);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -132,11 +139,26 @@ void HeartBeatTask(void *argument)
 
 /* Private application code --------------------------------------------------*/
 /* USER CODE BEGIN Application */
+
+void CliTask(void *argument)
+{
+   uint8_t cmd_buf[CLI_LINE_BUF_SIZE];
+  for(;;)
+  {
+    osEventFlagsWait(cliFlags, CLI_FLAG_LINE_READY, osFlagsWaitAny,osWaitForever);
+    while (CLI_GetLine(cmd_buf, sizeof(cmd_buf)))
+    	 {
+    	   // TODO: process command in future
+    	 }
+  }
+}
+
+
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
 	if(huart->Instance == USART2)
 	{
-	  RingBuffer_Put(&cli_buffer,rx_data);
+	  CLI_PutChar(rx_data);
 	  if(rx_data == '\n' || rx_data == '\r' )
 	  {
        //set event flag

@@ -1,0 +1,3 @@
+../Core/Src/cli.c:9:6:CLI_Init	8	static
+../Core/Src/cli.c:14:6:CLI_PutChar	16	static
+../Core/Src/cli.c:18:6:CLI_GetLine	24	static
