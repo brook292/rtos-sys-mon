@@ -15,7 +15,13 @@ A FreeRTOS-based system monitor running on STM32 Nucleo-F401RE with UART CLI, se
 3. Open UART terminal at 115200 baud
 
 ## CLI Commands
-- `status` – Show task state
-- `diag` – Run diagnostics
-- `sleep` – Enter STOP mode
-- `reset` – Software reset
+
+| Command | Description                    |
+|---------|--------------------------------|
+| help    | Show command list              |
+| status  | Print system uptime            |
+| diag    | Show heap status               |
+| sleep X | Enter STOP mode for X seconds   |
+| reset   | Software reset MCU             |
+
+
