@@ -26,6 +26,9 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "task_utils.h"
+#include "cli.h"
+#include "usart.h"
+#include <string.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -36,6 +39,7 @@
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 
+#define CLI_FLAG_LINE_READY (1U << 0)
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -45,21 +49,40 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN Variables */
+volatile uint8_t rx_data;
+osEventFlagsId_t cliFlags;
 /* USER CODE END Variables */
 /* Definitions for defaultTask */
-osThreadId_t HeartBeatTaskHandle;
-const osThreadAttr_t HeartBeatTask_attributes = {
-  .name = "HeartBeatTask",
+osThreadId_t defaultTaskHandle;
+const osThreadAttr_t defaultTask_attributes = {
+  .name = "defaultTask",
   .stack_size = 128 * 4,
   .priority = (osPriority_t) osPriorityLow,
 };
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
+void HeartBeatTask(void *argument);
+void CliTask(void *argument);
+
+osThreadId_t HeartBeatTaskHandle;
+osThreadId_t CliTaskHandle;
+
+const osThreadAttr_t HeartBeatTask_attributes = {
+  .name = "HeartBeatTask",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityLow,
+};
+
+const osThreadAttr_t CliTask_attributes = {
+  .name = "CliTask",
+  .stack_size = 256 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
 
 /* USER CODE END FunctionPrototypes */
 
-void HeartBeatTask(void *argument);
+void StartDefaultTask(void *argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -70,7 +93,8 @@ void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
   */
 void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN Init */
-
+  CLI_Init();
+  HAL_UART_Receive_IT(&huart2, (uint8_t *)&rx_data, sizeof(rx_data));
   /* USER CODE END Init */
 
   /* USER CODE BEGIN RTOS_MUTEX */
@@ -91,15 +115,17 @@ void MX_FREERTOS_Init(void) {
 
   /* Create the thread(s) */
   /* creation of defaultTask */
-	TaskCreateSafe(HeartBeatTask, NULL, &HeartBeatTask_attributes, &HeartBeatTaskHandle);
-
+  //defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
+  HeartBeatTaskHandle = osThreadNew(CliTask, NULL, &HeartBeatTask_attributes);
+  CliTaskHandle = osThreadNew(CliTask, NULL, &CliTask_attributes);
+
   /* USER CODE END RTOS_THREADS */
 
   /* USER CODE BEGIN RTOS_EVENTS */
-  /* add events, ... */
+   cliFlags = osEventFlagsNew(NULL);
   /* USER CODE END RTOS_EVENTS */
 
 }
@@ -111,9 +137,24 @@ void MX_FREERTOS_Init(void) {
   * @retval None
   */
 /* USER CODE END Header_StartDefaultTask */
+void StartDefaultTask(void *argument)
+{
+  /* USER CODE BEGIN StartDefaultTask */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END StartDefaultTask */
+}
+
+/* Private application code --------------------------------------------------*/
+/* USER CODE BEGIN Application */
+
 void HeartBeatTask(void *argument)
 {
   /* USER CODE BEGIN StartDefaultTask */
+  HAL_UART_Receive_IT(&huart2, (uint8_t *)&rx_data, sizeof(rx_data));
   /* Infinite loop */
   for(;;)
   {
@@ -123,8 +164,32 @@ void HeartBeatTask(void *argument)
   /* USER CODE END StartDefaultTask */
 }
 
-/* Private application code --------------------------------------------------*/
-/* USER CODE BEGIN Application */
+void CliTask(void *argument)
+{
+   uint8_t cmd_buf[CLI_LINE_BUF_SIZE];
+  for(;;)
+  {
+    osEventFlagsWait(cliFlags, CLI_FLAG_LINE_READY, osFlagsWaitAny,osWaitForever);
+    while (CLI_GetLine(cmd_buf, sizeof(cmd_buf)))
+    	 {
+    	   CLI_ProcessCommand((char*)cmd_buf);
+    	 }
+  }
+}
 
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+	if(huart->Instance == USART2)
+	{
+	  CLI_PutChar(rx_data);
+	  if( (rx_data == '\n' || rx_data == '\r' ) && cliFlags != NULL)
+	  {
+       //set event flag
+		osEventFlagsSet(cliFlags, CLI_FLAG_LINE_READY);
+	  }
+	  HAL_UART_Receive_IT(&huart2, (uint8_t *)&rx_data, sizeof(rx_data));
+	}
+}
 /* USER CODE END Application */
 

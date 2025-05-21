@@ -1,0 +1,55 @@
+# STM32CubeIDE
+*.launch
+*.log
+*.bak
+*.tmp
+*.swp
+*.swo
+*.su
+*.d
+*.o
+*.elf
+*.bin
+*.hex
+*.map
+*.list
+*.lst
+*.dep
+*.axf
+*.crf
+
+
+# Keil (uVision)
+*.uvgui.*
+*.uvoptx
+*.uvprojx
+*.plg
+*.bak
+*.dep
+*.iex
+*.lnp
+*.mpx
+*.lst
+*.crf
+*.htm
+*.tra
+
+# Build output
+/Debug/
+/Release/
+/build/
+/output/
+
+# FreeRTOS portable files (optional if generated)
+/Middlewares/Third_Party/FreeRTOS/Source/portable/*/IAR
+/Middlewares/Third_Party/FreeRTOS/Source/portable/*/RVDS
+/Middlewares/Third_Party/FreeRTOS/Source/portable/*/Keil
+/Middlewares/Third_Party/FreeRTOS/Source/portable/*/MPLAB
+
+# IDE-specific (Visual Studio Code, etc.)
+.vscode/
+.idea/
+
+# Misc
+*.DS_Store
+Thumbs.db
