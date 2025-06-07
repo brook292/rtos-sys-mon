@@ -1,5 +1,4 @@
-../Core/Src/freertos.c:94:6:MX_FREERTOS_Init	1
-../Core/Src/freertos.c:140:6:StartDefaultTask	1
-../Core/Src/freertos.c:154:6:HeartBeatTask	1
-../Core/Src/freertos.c:167:6:CliTask	2
-../Core/Src/freertos.c:181:6:HAL_UART_RxCpltCallback	5
+../Core/Src/freertos.c:96:6:MX_FREERTOS_Init	2
+../Core/Src/freertos.c:142:6:StartDefaultTask	1
+../Core/Src/freertos.c:156:6:HeartBeatTask	1
+../Core/Src/freertos.c:168:6:CliTask	3
